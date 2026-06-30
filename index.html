@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Őrségi Vendégházaink - Szőce és Őriszentpéter</title>
+    <style>
+        /* Alapvető stílusok és színek */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f4f7f4; color: #333; line-height: 1.6; }
+        
+        /* Navigáció */
+        nav { background-color: #2c4c3b; padding: 15px 0; position: sticky; top: 0; z-index: 100; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        nav a { color: white; text-decoration: none; margin: 0 15px; font-weight: bold; font-size: 1.1rem; }
+        nav a:hover { text-decoration: underline; color: #d4e0d7; }
+
+        /* Fejléc */
+        header {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
+            color: white; text-align: center; padding: 120px 20px;
+        }
+        header h1 { font-size: 3.5rem; margin-bottom: 15px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+        header p { font-size: 1.4rem; max-width: 800px; margin: auto; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
+
+        /* Tartalom dobozok */
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .house-section { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 50px; }
+        
+        .house-header { background-color: #3f6851; color: white; padding: 25px; text-align: center; }
+        .house-header h2 { font-size: 2.2rem; }
+        
+        .house-content { padding: 30px; }
+        .house-content h3 { color: #2c4c3b; margin: 20px 0 10px 0; font-size: 1.4rem; border-bottom: 2px solid #eee; padding-bottom: 5px; }
+        .house-content p { margin-bottom: 15px; }
+        .house-content ul { margin-left: 20px; margin-bottom: 20px; }
+        .house-content li { margin-bottom: 8px; }
+
+        /* Galéria Grid - A trükk itt van, ami elrejti a 6. utáni képeket */
+        .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 20px; }
+        .gallery img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; transition: transform 0.3s; cursor: pointer; }
+        .gallery img:hover { transform: scale(1.03); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        
+        /* Ha a galéria nincs kinyitva, a 7. képtől kezdve elrejtjük őket */
+        .gallery:not(.expanded) img:nth-child(n+7) { display: none; }
+
+        /* Több kép gomb stílusa */
+        .show-more-btn {
+            display: block; width: fit-content; margin: 25px auto 10px auto; padding: 12px 30px;
+            background-color: #f0c38e; color: #2c4c3b; border: none; border-radius: 50px;
+            font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+        .show-more-btn:hover { background-color: #e0af73; transform: translateY(-2px); }
+
+        /* Lightbox (Nagyított képek stílusa) */
+        .lightbox { display: none; position: fixed; z-index: 999; padding-top: 50px; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); }
+        .lightbox-content { margin: auto; display: block; max-width: 90%; max-height: 80vh; border-radius: 5px; animation: zoom 0.3s ease; }
+        @keyframes zoom { from {transform:scale(0.9)} to {transform:scale(1)} }
+        
+        .close { position: absolute; top: 15px; right: 35px; color: #f1f1f1; font-size: 40px; font-weight: bold; transition: 0.3s; cursor: pointer; z-index: 1000;}
+        .close:hover, .close:focus { color: #bbb; text-decoration: none; cursor: pointer; }
+        
+        .prev, .next { cursor: pointer; position: absolute; top: 50%; width: auto; padding: 16px; margin-top: -50px; color: white; font-weight: bold; font-size: 30px; transition: 0.6s ease; user-select: none; z-index: 1000; background-color: rgba(0,0,0,0.3); border-radius: 3px; }
+        .prev { left: 20px; }
+        .next { right: 20px; }
+        .prev:hover, .next:hover { background-color: rgba(0,0,0,0.8); }
+
+        /* Kapcsolat Szekció */
+        .contact-section { background-color: #2c4c3b; color: white; padding: 50px 20px; text-align: center; border-radius: 10px; margin-bottom: 50px;}
+        .contact-section h2 { font-size: 2.5rem; margin-bottom: 20px; }
+        .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 30px; }
+        .contact-card { background: rgba(255,255,255,0.1); padding: 30px; border-radius: 8px; }
+        .contact-card a { color: #f0c38e; font-size: 1.2rem; text-decoration: none; font-weight: bold; display: block; margin-top: 10px;}
+        .contact-card a:hover { text-decoration: underline; }
+
+        footer { text-align: center; padding: 20px; color: #666; font-size: 0.9rem; }
+
+        @media (max-width: 768px) { header h1 { font-size: 2.2rem; } nav a { display: block; margin: 10px 0; } }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="#aranymoha">Aranymoha Vendégház (Szőce)</a>
+        <a href="#gergocs">Gergőcs Vendégház (Őriszentpéter)</a>
+        <a href="#kapcsolat">Kapcsolat & Foglalás</a>
+    </nav>
+
+    <header>
+        <h1>Pihenés az Őrség Szívében</h1>
+        <p>Két csodálatos vendégház, egy cél: tökéletes nyugalom és kikapcsolódás a természet ölelésében. Fedezze fel Szőce és Őriszentpéter szépségeit velünk!</p>
+    </header>
+
+    <div class="container">
+
+        <!-- ARANYMOHA VENDÉGHÁZ -->
+        <section id="aranymoha" class="house-section">
+            <div class="house-header">
+                <h2>Aranymoha Vendégház - Szőce</h2>
+                <p>9935 Szőce, Kölcsey F. u. 88.</p>
+            </div>
+            <div class="house-content">
+                <p>Az Aranymoha Vendégház az Őrségi Nemzeti Parkban várja a pihenni vágyókat. Szőcén két vendégházunk (apartmanunk) található, amelyek egy hatalmas, gyönyörű közös udvaron osztoznak. A közelben található híres Szőcei láprét és a Vadása-tó is könnyen elérhető.</p>
+                
+                <h3>Amit kínálunk:</h3>
+                <ul>
+                    <li>Két külön bejáratú apartman (1-es és 2-es), mindegyik fedett terasszal.</li>
+                    <li>Nagy közös, zárt udvar, mely kiváló gyerekeknek és kisállatoknak is (kutyabarát).</li>
+                    <li>Tűzrakóhely szalonnasütéshez, grillezéshez, bográcsozáshoz.</li>
+                    <li>Teljesen önellátó, jól felszerelt konyhák és ingyenes Wi-Fi.</li>
+                </ul>
+
+                <h3>Képek (Udvar, Apartmanok és Látnivalók):</h3>
+                <div class="gallery" id="gallery-aranymoha">
+                    <!-- Közös udvar (5 kép) -->
+                    <img src="udvar1.jpg" alt="Közös udvar">
+                    <img src="udvar2.jpg" alt="Közös udvar">
+                    <img src="udvar3.jpg" alt="Közös udvar">
+                    <img src="udvar4.jpg" alt="Közös udvar">
+                    <img src="udvar5.jpg" alt="Közös udvar">
+
+                    <!-- Apartman 1 (1-7, 5 kimarad) -->
+                    <img src="szoceap1_1.jpg" alt="Apartman 1">
+                    <img src="szoceap1_2.jpg" alt="Apartman 1">
+                    <img src="szoceap1_3.jpg" alt="Apartman 1">
+                    <img src="szoceap1_4.jpg" alt="Apartman 1">
+                    <img src="szoceap1_6.jpg" alt="Apartman 1">
+                    <img src="szoceap1_7.jpg" alt="Apartman 1">
+
+                    <!-- Apartman 2 (1-10, 2 kimarad) -->
+                    <img src="szoceap2_1.jpg" alt="Apartman 2">
+                    <img src="szoceap2_3.jpg" alt="Apartman 2">
+                    <img src="szoceap2_4.jpg" alt="Apartman 2">
+                    <img src="szoceap2_5.jpg" alt="Apartman 2">
+                    <img src="szoceap2_6.jpg" alt="Apartman 2">
+                    <img src="szoceap2_7.jpg" alt="Apartman 2">
+                    <img src="szoceap2_8.jpg" alt="Apartman 2">
+                    <img src="szoceap2_9.jpg" alt="Apartman 2">
+                    <img src="szoceap2_10.jpg" alt="Apartman 2">
+
+                    <!-- Látnivalók / Láprét (3 kép) -->
+                    <img src="lapret1.jpg" alt="Szőcei Láprét">
+                    <img src="lapret2.jpg" alt="Szőcei Láprét">
+                    <img src="lapret3.jpg" alt="Szőcei Láprét">
+                </div>
+                <button class="show-more-btn" onclick="toggleGallery('gallery-aranymoha', this)">Összes kép mutatása ▾</button>
+            </div>
+        </section>
+
+
+        <!-- GERGŐCS VENDÉGHÁZ -->
+        <section id="gergocs" class="house-section">
+            <div class="house-header">
+                <h2>Gergőcs Vendégház - Őriszentpéter</h2>
+                <p>9941 Őriszentpéter, Kovácsszer 42.</p>
+            </div>
+            <div class="house-content">
+                <p>Vendégházunk az Őrség "fővárosában", a kovácsszeri dombtetőn helyezkedik el, ahonnan páratlan tájkép és kilátás nyílik a Zala völgyére. Egy teljes ház áll egyetlen társaság rendelkezésére!</p>
+                
+                <h3>Amit kínálunk:</h3>
+                <ul>
+                    <li>2 hálótér (5 férőhely), felszerelt konyha és saját fürdőszoba.</li>
+                    <li>Nagy udvar öreg vadgesztenyefával, árnyékos kerti pavilonnal és lenyűgöző panorámával.</li>
+                    <li>Kültéri kemence és szalonnasütő (ingyenes tűzifával).</li>
+                    <li>Szezonban friss gyümölcs és zöldség fogyasztható a kertből! Állatbarát szálláshely.</li>
+                </ul>
+
+                <h3>Képek a Vendégházról és a Tájról:</h3>
+                <div class="gallery" id="gallery-gergocs">
+                    <!-- Gergőcs képek -->
+                    <img src="gergocs2.jpg" alt="Gergőcs Vendégház">
+                    <img src="gergocs4.jpg" alt="Gergőcs Vendégház">
+                    <img src="gergocs5.jpg" alt="Gergőcs Vendégház">
+                    <img src="gergocs6.jpg" alt="Gergőcs Vendégház">
+                    <img src="gergocs7.jpg" alt="Gergőcs Vendégház">
+                    <img src="gergocs8.jpg" alt="Gergőcs Vendégház">
+                    <img src="gergocs9.jpg" alt="Gergőcs Vendégház">
+                    <img src="gergocs12.jpg" alt="Gergőcs Vendégház">
+                    <img src="gergocs13.jpg" alt="Gergőcs Vendégház">
+                    <img src="gergocs14.jpg" alt="Gergőcs Vendégház">
+                    <img src="gergocs16.jpg" alt="Gergőcs Vendégház">
+
+                    <!-- Tájkép képek -->
+                    <img src="tajkep1.jpg" alt="Őrségi tájkép">
+                    <img src="tajkep2.jpg" alt="Őrségi tájkép">
+                    <img src="tajkep3.jpg" alt="Őrségi tájkép">
+                </div>
+                <button class="show-more-btn" onclick="toggleGallery('gallery-gergocs', this)">Összes kép mutatása ▾</button>
+            </div>
+        </section>
+
+        <!-- KAPCSOLAT ÉS FOGLALÁS -->
+        <section id="kapcsolat" class="contact-section">
+            <h2>Kérdése van? Foglalna? Keressen bátran!</h2>
+            <p>Közvetlen foglalás esetén garantáltan a legjobb árat biztosítjuk.</p>
+            
+            <div class="contact-grid">
+                <!-- Elérhetőség Doboz 1 -->
+                <div class="contact-card">
+                    <h3>Telefonhívás</h3>
+                    <p>Hívjon minket a nap bármely szakában!</p>
+                    <a href="tel:+36307583756">📞 +36 30 758 3756</a>
+                </div>
+                
+                <!-- Elérhetőség Doboz 2 -->
+                <div class="contact-card">
+                    <h3>E-mail</h3>
+                    <p>Írjon nekünk üzenetet, és hamarosan válaszolunk.</p>
+                    <a href="mailto:toroktamas975@gmail.com">✉️ toroktamas975@gmail.com</a>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Aranymoha és Gergőcs Vendégházak. Minden jog fenntartva. SZÉP kártya elfogadóhely.</p>
+    </footer>
+
+    <!-- A kinagyított képeket kezelő doboz (Lightbox) -->
+    <div id="lightbox" class="lightbox">
+        <span class="close" onclick="closeLightbox()">&times;</span>
+        <img class="lightbox-content" id="lightbox-img">
+        <a class="prev" onclick="changeSlide(-1)">&#10094;</a>
+        <a class="next" onclick="changeSlide(1)">&#10095;</a>
+    </div>
+
+    <!-- Működtető kód a kattintós galériához és a "Több kép" gombhoz -->
+    <script>
+        // "Összes kép mutatása" gomb funkciója
+        function toggleGallery(galleryId, btnElement) {
+            const gallery = document.getElementById(galleryId);
+            gallery.classList.toggle('expanded');
+            
+            if (gallery.classList.contains('expanded')) {
+                btnElement.innerHTML = 'Kevesebb kép mutatása ▴';
+            } else {
+                btnElement.innerHTML = 'Összes kép mutatása ▾';
+                // Automatikusan visszagörget a galéria tetejére, hogy ne vesszen el a látogató
+                gallery.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        // --- Lightbox (Nagyított galéria) funkciói ---
+        let currentGalleryImages = [];
+        let currentImageIndex = 0;
+
+        document.querySelectorAll('.gallery img').forEach(img => {
+            img.addEventListener('click', function() {
+                const parentGallery = this.closest('.gallery');
+                currentGalleryImages = Array.from(parentGallery.querySelectorAll('img')).map(i => i.src);
+                currentImageIndex = currentGalleryImages.indexOf(this.src);
+                
+                document.getElementById('lightbox').style.display = 'block';
+                document.getElementById('lightbox-img').src = currentGalleryImages[currentImageIndex];
+            });
+        });
+
+        function closeLightbox() {
+            document.getElementById('lightbox').style.display = 'none';
+        }
+
+        function changeSlide(direction) {
+            currentImageIndex += direction;
+            if (currentImageIndex >= currentGalleryImages.length) {
+                currentImageIndex = 0;
+            } else if (currentImageIndex < 0) {
+                currentImageIndex = currentGalleryImages.length - 1;
+            }
+            document.getElementById('lightbox-img').src = currentGalleryImages[currentImageIndex];
+        }
+
+        document.getElementById('lightbox').addEventListener('click', function(e) {
+            if (e.target !== document.getElementById('lightbox-img') && e.target !== document.querySelector('.prev') && e.target !== document.querySelector('.next')) {
+                closeLightbox();
+            }
+        });
+    </script>
+</body>
+</html>
