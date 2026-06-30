@@ -5,14 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Őrségi Vendégházaink - Szőce és Őriszentpéter</title>
     <style>
+        /* Sima görgetés a linkekre kattintáskor */
+        html { scroll-behavior: smooth; }
+
         /* Alapvető stílusok és színek */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #f4f7f4; color: #333; line-height: 1.6; }
         
         /* Navigáció */
-        nav { background-color: #2c4c3b; padding: 15px 0; position: sticky; top: 0; z-index: 100; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        nav a { color: white; text-decoration: none; margin: 0 15px; font-weight: bold; font-size: 1.1rem; }
-        nav a:hover { text-decoration: underline; color: #d4e0d7; }
+        nav { 
+            background-color: #2c4c3b; 
+            padding: 15px 0; 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+            text-align: center; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
+            transition: top 0.3s ease-in-out; /* Animáció a sáv eltűnéséhez/megjelenéséhez */
+        }
+        nav a { color: white; text-decoration: none; margin: 0 15px; font-weight: bold; font-size: 1.1rem; transition: color 0.3s; }
+        nav a:hover { color: #d4e0d7; }
 
         /* Fejléc */
         header {
@@ -35,12 +47,12 @@
         .house-content ul { margin-left: 20px; margin-bottom: 20px; }
         .house-content li { margin-bottom: 8px; }
 
-        /* Galéria Grid - A trükk itt van, ami elrejti a 6. utáni képeket */
+        /* Galéria Grid */
         .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 20px; }
         .gallery img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; transition: transform 0.3s; cursor: pointer; }
         .gallery img:hover { transform: scale(1.03); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
         
-        /* Ha a galéria nincs kinyitva, a 7. képtől kezdve elrejtjük őket */
+        /* Rejtett képek (a 7. képtől) */
         .gallery:not(.expanded) img:nth-child(n+7) { display: none; }
 
         /* Több kép gomb stílusa */
@@ -53,16 +65,26 @@
 
         /* Lightbox (Nagyított képek stílusa) */
         .lightbox { display: none; position: fixed; z-index: 999; padding-top: 50px; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); }
-        .lightbox-content { margin: auto; display: block; max-width: 90%; max-height: 80vh; border-radius: 5px; animation: zoom 0.3s ease; }
+        .lightbox-content { 
+            margin: auto; 
+            display: block; 
+            max-width: 90vw; 
+            max-height: 80vh; 
+            width: auto; 
+            height: auto; 
+            object-fit: scale-down; 
+            border-radius: 5px; 
+            animation: zoom 0.3s ease; 
+        }
         @keyframes zoom { from {transform:scale(0.9)} to {transform:scale(1)} }
         
         .close { position: absolute; top: 15px; right: 35px; color: #f1f1f1; font-size: 40px; font-weight: bold; transition: 0.3s; cursor: pointer; z-index: 1000;}
         .close:hover, .close:focus { color: #bbb; text-decoration: none; cursor: pointer; }
         
-        .prev, .next { cursor: pointer; position: absolute; top: 50%; width: auto; padding: 16px; margin-top: -50px; color: white; font-weight: bold; font-size: 30px; transition: 0.6s ease; user-select: none; z-index: 1000; background-color: rgba(0,0,0,0.3); border-radius: 3px; }
+        .prev, .next { cursor: pointer; position: absolute; top: 50%; width: auto; padding: 16px; margin-top: -50px; color: white; font-weight: bold; font-size: 30px; transition: 0.6s ease; user-select: none; z-index: 1000; background-color: rgba(0,0,0,0.4); border-radius: 3px; }
         .prev { left: 20px; }
         .next { right: 20px; }
-        .prev:hover, .next:hover { background-color: rgba(0,0,0,0.8); }
+        .prev:hover, .next:hover { background-color: rgba(0,0,0,0.9); }
 
         /* Kapcsolat Szekció */
         .contact-section { background-color: #2c4c3b; color: white; padding: 50px 20px; text-align: center; border-radius: 10px; margin-bottom: 50px;}
@@ -74,12 +96,48 @@
 
         footer { text-align: center; padding: 20px; color: #666; font-size: 0.9rem; }
 
-        @media (max-width: 768px) { header h1 { font-size: 2.2rem; } nav a { display: block; margin: 10px 0; } }
+        /* =========================================
+           MOBIL OPTIMALIZÁLÁS (768px alatti kijelzők)
+           ========================================= */
+        @media (max-width: 768px) { 
+            header { padding: 60px 15px; }
+            header h1 { font-size: 2rem; }
+            header p { font-size: 1.1rem; }
+            
+            nav { padding: 10px 0; }
+            nav a { 
+                display: block; 
+                margin: 5px 15px; 
+                padding: 10px; 
+                background-color: rgba(255,255,255,0.1); 
+                border-radius: 5px; 
+            }
+            nav a:hover { text-decoration: none; background-color: rgba(255,255,255,0.2); }
+            
+            .container { margin: 20px auto; padding: 0 10px; }
+            .house-section { margin-bottom: 30px; }
+            .house-header { padding: 15px; }
+            .house-header h2 { font-size: 1.6rem; }
+            .house-content { padding: 15px; }
+            
+            .gallery { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
+            .gallery img { height: 140px; }
+            
+            .show-more-btn { width: 100%; max-width: 280px; padding: 14px 20px; font-size: 1rem; }
+
+            .contact-section { padding: 30px 15px; }
+            .contact-section h2 { font-size: 1.8rem; }
+            .contact-grid { grid-template-columns: 1fr; gap: 15px; }
+            
+            .prev { left: 0; padding: 12px; font-size: 24px; border-radius: 0 3px 3px 0; }
+            .next { right: 0; padding: 12px; font-size: 24px; border-radius: 3px 0 0 3px; }
+            .close { top: 10px; right: 15px; font-size: 35px; }
+        }
     </style>
 </head>
 <body>
 
-    <nav>
+    <nav id="navbar">
         <a href="#aranymoha">Aranymoha Vendégház (Szőce)</a>
         <a href="#gergocs">Gergőcs Vendégház (Őriszentpéter)</a>
         <a href="#kapcsolat">Kapcsolat & Foglalás</a>
@@ -111,36 +169,29 @@
 
                 <h3>Képek (Udvar, Apartmanok és Látnivalók):</h3>
                 <div class="gallery" id="gallery-aranymoha">
-                    <!-- Közös udvar (5 kép) -->
-                    <img src="udvar1.jpg" alt="Közös udvar">
-                    <img src="udvar2.jpg" alt="Közös udvar">
-                    <img src="udvar3.jpg" alt="Közös udvar">
-                    <img src="udvar4.jpg" alt="Közös udvar">
-                    <img src="udvar5.jpg" alt="Közös udvar">
-
-                    <!-- Apartman 1 (1-7, 5 kimarad) -->
-                    <img src="szoceap1_1.jpg" alt="Apartman 1">
-                    <img src="szoceap1_2.jpg" alt="Apartman 1">
-                    <img src="szoceap1_3.jpg" alt="Apartman 1">
-                    <img src="szoceap1_4.jpg" alt="Apartman 1">
-                    <img src="szoceap1_6.jpg" alt="Apartman 1">
-                    <img src="szoceap1_7.jpg" alt="Apartman 1">
-
-                    <!-- Apartman 2 (1-10, 2 kimarad) -->
-                    <img src="szoceap2_1.jpg" alt="Apartman 2">
-                    <img src="szoceap2_3.jpg" alt="Apartman 2">
-                    <img src="szoceap2_4.jpg" alt="Apartman 2">
-                    <img src="szoceap2_5.jpg" alt="Apartman 2">
-                    <img src="szoceap2_6.jpg" alt="Apartman 2">
-                    <img src="szoceap2_7.jpg" alt="Apartman 2">
-                    <img src="szoceap2_8.jpg" alt="Apartman 2">
-                    <img src="szoceap2_9.jpg" alt="Apartman 2">
-                    <img src="szoceap2_10.jpg" alt="Apartman 2">
-
-                    <!-- Látnivalók / Láprét (3 kép) -->
-                    <img src="lapret1.jpg" alt="Szőcei Láprét">
-                    <img src="lapret2.jpg" alt="Szőcei Láprét">
-                    <img src="lapret3.jpg" alt="Szőcei Láprét">
+                    <img src="udvar1.jpg" data-large="udvar1.jpg" alt="Közös udvar">
+                    <img src="udvar2.jpg" data-large="udvar2.jpg" alt="Közös udvar">
+                    <img src="udvar3.jpg" data-large="udvar3.jpg" alt="Közös udvar">
+                    <img src="udvar4.jpg" data-large="udvar4.jpg" alt="Közös udvar">
+                    <img src="udvar5.jpg" data-large="udvar5.jpg" alt="Közös udvar">
+                    <img src="szoceap1_1.jpg" data-large="szoceap1_1.jpg" alt="Apartman 1">
+                    <img src="szoceap1_2.jpg" data-large="szoceap1_2.jpg" alt="Apartman 1">
+                    <img src="szoceap1_3.jpg" data-large="szoceap1_3.jpg" alt="Apartman 1">
+                    <img src="szoceap1_4.jpg" data-large="szoceap1_4.jpg" alt="Apartman 1">
+                    <img src="szoceap1_6.jpg" data-large="szoceap1_6.jpg" alt="Apartman 1">
+                    <img src="szoceap1_7.jpg" data-large="szoceap1_7.jpg" alt="Apartman 1">
+                    <img src="szoceap2_1.jpg" data-large="szoceap2_1.jpg" alt="Apartman 2">
+                    <img src="szoceap2_3.jpg" data-large="szoceap2_3.jpg" alt="Apartman 2">
+                    <img src="szoceap2_4.jpg" data-large="szoceap2_4.jpg" alt="Apartman 2">
+                    <img src="szoceap2_5.jpg" data-large="szoceap2_5.jpg" alt="Apartman 2">
+                    <img src="szoceap2_6.jpg" data-large="szoceap2_6.jpg" alt="Apartman 2">
+                    <img src="szoceap2_7.jpg" data-large="szoceap2_7.jpg" alt="Apartman 2">
+                    <img src="szoceap2_8.jpg" data-large="szoceap2_8.jpg" alt="Apartman 2">
+                    <img src="szoceap2_9.jpg" data-large="szoceap2_9.jpg" alt="Apartman 2">
+                    <img src="szoceap2_10.jpg" data-large="szoceap2_10.jpg" alt="Apartman 2">
+                    <img src="lapret1.jpg" data-large="lapret1.jpg" alt="Szőcei Láprét">
+                    <img src="lapret2.jpg" data-large="lapret2.jpg" alt="Szőcei Láprét">
+                    <img src="lapret3.jpg" data-large="lapret3.jpg" alt="Szőcei Láprét">
                 </div>
                 <button class="show-more-btn" onclick="toggleGallery('gallery-aranymoha', this)">Összes kép mutatása ▾</button>
             </div>
@@ -166,23 +217,20 @@
 
                 <h3>Képek a Vendégházról és a Tájról:</h3>
                 <div class="gallery" id="gallery-gergocs">
-                    <!-- Gergőcs képek -->
-                    <img src="gergocs2.jpg" alt="Gergőcs Vendégház">
-                    <img src="gergocs4.jpg" alt="Gergőcs Vendégház">
-                    <img src="gergocs5.jpg" alt="Gergőcs Vendégház">
-                    <img src="gergocs6.jpg" alt="Gergőcs Vendégház">
-                    <img src="gergocs7.jpg" alt="Gergőcs Vendégház">
-                    <img src="gergocs8.jpg" alt="Gergőcs Vendégház">
-                    <img src="gergocs9.jpg" alt="Gergőcs Vendégház">
-                    <img src="gergocs12.jpg" alt="Gergőcs Vendégház">
-                    <img src="gergocs13.jpg" alt="Gergőcs Vendégház">
-                    <img src="gergocs14.jpg" alt="Gergőcs Vendégház">
-                    <img src="gergocs16.jpg" alt="Gergőcs Vendégház">
-
-                    <!-- Tájkép képek -->
-                    <img src="tajkep1.jpg" alt="Őrségi tájkép">
-                    <img src="tajkep2.jpg" alt="Őrségi tájkép">
-                    <img src="tajkep3.jpg" alt="Őrségi tájkép">
+                    <img src="gergocs2.jpg" data-large="gergocs2.jpg" alt="Gergőcs Vendégház">
+                    <img src="gergocs4.jpg" data-large="gergocs4.jpg" alt="Gergőcs Vendégház">
+                    <img src="gergocs5.jpg" data-large="gergocs5.jpg" alt="Gergőcs Vendégház">
+                    <img src="gergocs6.jpg" data-large="gergocs6.jpg" alt="Gergőcs Vendégház">
+                    <img src="gergocs7.jpg" data-large="gergocs7.jpg" alt="Gergőcs Vendégház">
+                    <img src="gergocs8.jpg" data-large="gergocs8.jpg" alt="Gergőcs Vendégház">
+                    <img src="gergocs9.jpg" data-large="gergocs9.jpg" alt="Gergőcs Vendégház">
+                    <img src="gergocs12.jpg" data-large="gergocs12.jpg" alt="Gergőcs Vendégház">
+                    <img src="gergocs13.jpg" data-large="gergocs13.jpg" alt="Gergőcs Vendégház">
+                    <img src="gergocs14.jpg" data-large="gergocs14.jpg" alt="Gergőcs Vendégház">
+                    <img src="gergocs16.jpg" data-large="gergocs16.jpg" alt="Gergőcs Vendégház">
+                    <img src="tajkep1.jpg" data-large="tajkep1.jpg" alt="Őrségi tájkép">
+                    <img src="tajkep2.jpg" data-large="tajkep2.jpg" alt="Őrségi tájkép">
+                    <img src="tajkep3.jpg" data-large="tajkep3.jpg" alt="Őrségi tájkép">
                 </div>
                 <button class="show-more-btn" onclick="toggleGallery('gallery-gergocs', this)">Összes kép mutatása ▾</button>
             </div>
@@ -194,14 +242,12 @@
             <p>Közvetlen foglalás esetén garantáltan a legjobb árat biztosítjuk.</p>
             
             <div class="contact-grid">
-                <!-- Elérhetőség Doboz 1 -->
                 <div class="contact-card">
                     <h3>Telefonhívás</h3>
                     <p>Hívjon minket a nap bármely szakában!</p>
                     <a href="tel:+36307583756">📞 +36 30 758 3756</a>
                 </div>
                 
-                <!-- Elérhetőség Doboz 2 -->
                 <div class="contact-card">
                     <h3>E-mail</h3>
                     <p>Írjon nekünk üzenetet, és hamarosan válaszolunk.</p>
@@ -224,8 +270,25 @@
         <a class="next" onclick="changeSlide(1)">&#10095;</a>
     </div>
 
-    <!-- Működtető kód a kattintós galériához és a "Több kép" gombhoz -->
+    <!-- Működtető kód -->
     <script>
+        // --- Címsor (Navigáció) okos elrejtése lefelé görgetéskor ---
+        let lastScrollTop = 0;
+        const navbar = document.getElementById('navbar');
+
+        window.addEventListener('scroll', function() {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            // Ha lefelé görgetünk és nem vagyunk a lap legtetején
+            if (scrollTop > lastScrollTop && scrollTop > 50) {
+                navbar.style.top = "-300px"; // Felcsúsztatjuk a sávot (biztosan eltűnik asztalin és mobilon is)
+            } else {
+                navbar.style.top = "0"; // Felfelé görgetésnél visszacsúsztatjuk
+            }
+            // Mobilos böngészőknél a gumi-szerű túlgörgetés (bounce) kivédése
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
+        });
+
         // "Összes kép mutatása" gomb funkciója
         function toggleGallery(galleryId, btnElement) {
             const gallery = document.getElementById(galleryId);
@@ -235,28 +298,35 @@
                 btnElement.innerHTML = 'Kevesebb kép mutatása ▴';
             } else {
                 btnElement.innerHTML = 'Összes kép mutatása ▾';
-                // Automatikusan visszagörget a galéria tetejére, hogy ne vesszen el a látogató
                 gallery.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         }
 
-        // --- Lightbox (Nagyított galéria) funkciói ---
+        // --- Lightbox funkciók ---
         let currentGalleryImages = [];
         let currentImageIndex = 0;
 
         document.querySelectorAll('.gallery img').forEach(img => {
             img.addEventListener('click', function() {
                 const parentGallery = this.closest('.gallery');
-                currentGalleryImages = Array.from(parentGallery.querySelectorAll('img')).map(i => i.src);
-                currentImageIndex = currentGalleryImages.indexOf(this.src);
+                
+                currentGalleryImages = Array.from(parentGallery.querySelectorAll('img')).map(i => ({
+                    thumb: i.src,
+                    large: i.getAttribute('data-large') || i.src 
+                }));
+                
+                currentImageIndex = currentGalleryImages.findIndex(i => i.thumb === this.src);
                 
                 document.getElementById('lightbox').style.display = 'block';
-                document.getElementById('lightbox-img').src = currentGalleryImages[currentImageIndex];
+                document.getElementById('lightbox-img').src = currentGalleryImages[currentImageIndex].large;
             });
         });
 
         function closeLightbox() {
             document.getElementById('lightbox').style.display = 'none';
+            setTimeout(() => {
+                document.getElementById('lightbox-img').src = "";
+            }, 300);
         }
 
         function changeSlide(direction) {
@@ -266,14 +336,42 @@
             } else if (currentImageIndex < 0) {
                 currentImageIndex = currentGalleryImages.length - 1;
             }
-            document.getElementById('lightbox-img').src = currentGalleryImages[currentImageIndex];
+            document.getElementById('lightbox-img').src = currentGalleryImages[currentImageIndex].large;
         }
 
+        // Zárás háttérre kattintáskor
         document.getElementById('lightbox').addEventListener('click', function(e) {
-            if (e.target !== document.getElementById('lightbox-img') && e.target !== document.querySelector('.prev') && e.target !== document.querySelector('.next')) {
+            if (e.target !== document.getElementById('lightbox-img') && 
+                e.target !== document.querySelector('.prev') && 
+                e.target !== document.querySelector('.next')) {
                 closeLightbox();
             }
         });
+
+        // --- Mobilos ujjhúzás (Swipe) érzékelése a Lightboxban ---
+        let touchstartX = 0;
+        let touchendX = 0;
+        
+        const lightboxElement = document.getElementById('lightbox');
+
+        lightboxElement.addEventListener('touchstart', function(event) {
+            touchstartX = event.changedTouches[0].screenX;
+        }, false);
+
+        lightboxElement.addEventListener('touchend', function(event) {
+            touchendX = event.changedTouches[0].screenX;
+            handleSwipe();
+        }, false); 
+
+        function handleSwipe() {
+            const minSwipeDistance = 50;
+            if (touchendX < touchstartX - minSwipeDistance) {
+                changeSlide(1); 
+            }
+            if (touchendX > touchstartX + minSwipeDistance) {
+                changeSlide(-1); 
+            }
+        }
     </script>
 </body>
 </html>
